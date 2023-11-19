@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyALBoMhIEIr17l8gyfYtyHaVe6B-x8kuuc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>300178088385</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.fyp.szabist.solarsense</string>
+	<key>PROJECT_ID</key>
+	<string>solarsense-6654b</string>
+	<key>STORAGE_BUCKET</key>
+	<string>solarsense-6654b.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:300178088385:ios:a4b55d1d5a24f5fd3dcf40</string>
+</dict>
+</plist>

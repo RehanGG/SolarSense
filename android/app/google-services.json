@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "300178088385",
+    "project_id": "solarsense-6654b",
+    "storage_bucket": "solarsense-6654b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:300178088385:android:8a6e30105b6cdcca3dcf40",
+        "android_client_info": {
+          "package_name": "com.fyp.szabist.solarsense"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBS4cQ_KSKuHRz3FxgZzehqFJVRCeJHcHc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

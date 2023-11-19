@@ -1,0 +1,44 @@
+name: solarsense
+description: Solar panels optimal spot and power monitoring and calculations using machine learning.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  get: ^4.6.6
+  flutter_screenutil: ^5.9.0
+  firebase_core: ^2.22.0
+  firebase_auth: ^4.13.0
+  cloud_firestore: ^4.13.0
+  google_maps_flutter: ^2.5.0
+  http: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  flutter_native_splash: ^2.3.5
+  flutter_launcher_icons: ^0.13.1
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "dev_assets/app-logo.png"
+  adaptive_icon_background: "#0B004D"
+  adaptive_icon_foreground: "dev_assets/app-logo.png"
+
+flutter_native_splash:
+  image: dev_assets/splash-logo.png
+  color: "#ffffff"
