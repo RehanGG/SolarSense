@@ -5,6 +5,7 @@ import 'package:solarsense/modules/authentication/controllers/editprofile_contro
 
 import '../../../shared/constants/constants.dart';
 import '../../../shared/widgets/text_form_field.dart';
+import '../widgets/select_location.dart';
 
 class EditProfileView extends GetView<EditProfileController> {
   const EditProfileView({Key? key}) : super(key: key);
@@ -16,9 +17,16 @@ class EditProfileView extends GetView<EditProfileController> {
       child: Column(
         children: [
           CustomTextField(
-            controller: controller.fullName,
+            controller: controller.state.fullName,
             hintText: 'Enter Full Name',
           ),
+          Obx(() {
+            return SelectLocation(
+              function: controller.getLocation,
+              locationName: controller.state.locationName.value,
+              selectedLocation: controller.state.selectedLocation.value,
+            );
+          }),
           SizedBox(
             height: 5.h,
           ),

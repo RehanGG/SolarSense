@@ -5,6 +5,25 @@ import 'package:get/get.dart';
 import '../widgets/transparent_route.dart';
 import 'constants.dart';
 
+//Validations
+bool isValidEmail(String email) {
+  RegExp emailRegex = RegExp(
+      r'^[\w-]+(\.[\w-]+)*@[A-Za-z0-9]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$');
+  return emailRegex.hasMatch(email);
+}
+
+bool isValidPassword(String password) {
+  RegExp passwordRegex = RegExp(
+      r'^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$');
+
+  return passwordRegex.hasMatch(password);
+}
+
+bool isValidFullName(String fullName) {
+  RegExp fullNameRegex = RegExp(r"^[A-Za-z\s\'\-]+$");
+  return fullNameRegex.hasMatch(fullName);
+}
+
 //LOADING SCREEN
 void showLoadingScreen() async {
   AppController.to.state.loadingWillPop = false;

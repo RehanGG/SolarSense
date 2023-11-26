@@ -11,6 +11,7 @@ import 'package:solarsense/modules/authentication/views/resetpass_view.dart';
 import 'package:solarsense/modules/authentication/views/signup_view.dart';
 import 'package:solarsense/modules/dashboard/views/calculate_spot_view.dart';
 import 'package:solarsense/modules/dashboard/views/dashboard_view.dart';
+import 'package:solarsense/modules/map/views/map_view.dart';
 import 'package:solarsense/routes/app_routes.dart';
 
 import '../modules/authentication/bindings/resetpass_bindings.dart';
@@ -58,6 +59,10 @@ abstract class AppPages {
     GetPage(
       name: Routes.MANAGE_USERS_VIEW,
       page: () => const ManageUsersView(),
+    ),
+    GetPage(
+      name: Routes.MAP_VIEW,
+      page: () => const MapView(),
     ),
   ];
 }

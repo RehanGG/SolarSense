@@ -9,6 +9,7 @@ import '../../../routes/app_routes.dart';
 import '../../../shared/constants/constants.dart';
 import '../../../shared/widgets/password_form_field.dart';
 import '../../../shared/widgets/text_form_field.dart';
+import '../widgets/select_location.dart';
 
 class SignupView extends GetView<SignupController> {
   const SignupView({Key? key}) : super(key: key);
@@ -30,6 +31,13 @@ class SignupView extends GetView<SignupController> {
           PasswordFormField(
               controller: controller.state.password,
               hintText: 'Enter Password'),
+          Obx(() {
+            return SelectLocation(
+              function: controller.getLocation,
+              locationName: controller.state.locationName.value,
+              selectedLocation: controller.state.selectedLocation.value,
+            );
+          }),
           SizedBox(
             height: 5.h,
           ),
