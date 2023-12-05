@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -20,6 +20,13 @@ dependencies:
   http: ^1.1.0
   geolocator: ^10.1.0
   geocoding: ^2.1.1
+  flutter_google_places_hoc081098: ^1.2.0
+  flutter_google_maps_webservices: ^1.1.1
+  google_api_headers: ^3.4.0
+
+dependency_overrides:
+  http: ^1.1.0
+  google_api_headers: ^3.4.0
 
 dev_dependencies:
   flutter_test:

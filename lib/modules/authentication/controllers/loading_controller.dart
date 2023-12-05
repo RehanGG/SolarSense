@@ -29,9 +29,24 @@ class LoadingController extends GetxController {
     AppController.to.state.appUser.value = user;
   }
 
+  //Verify Email
+  Future<void> verifyEmail() async {
+    try {
+      final bool result = await Get.toNamed(Routes.VERIFY_EMAIL_VIEW);
+      if (result != true) {
+        await verifyEmail();
+      }
+    } catch (error) {
+      await verifyEmail();
+    }
+  }
+
   void loadUser() async {
     try {
       await loadUserFromFirestore();
+      if (!FirebaseAuth.instance.currentUser!.emailVerified) {
+        await verifyEmail();
+      }
       Get.offAllNamed(Routes.DASHBOARD_VIEW);
     } catch (_) {
       Get.offAllNamed(Routes.LOGIN_VIEW);

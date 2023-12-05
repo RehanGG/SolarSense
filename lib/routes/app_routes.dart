@@ -6,12 +6,11 @@ abstract class Routes {
   static const String LOGIN_VIEW = '/login-view';
   static const String SIGNUP_VIEW = '/signup-view';
   static const String RESETPASS_VIEW = '/resetpass-view';
+  static const String EDITPROFILE_VIEW = '/edit-profile-view';
+  static const String VERIFY_EMAIL_VIEW = '/verify-email-view';
 
   //LOCATION
   static const String MAP_VIEW = '/map-view';
-
-  //PROFILE
-  static const String EDITPROFILE_VIEW = '/edit-profile-view';
 
   //Dashboard
   static const String DASHBOARD_VIEW = '/dashboard-view';

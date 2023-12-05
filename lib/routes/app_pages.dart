@@ -9,8 +9,10 @@ import 'package:solarsense/modules/authentication/views/loading_view.dart';
 import 'package:solarsense/modules/authentication/views/login_view.dart';
 import 'package:solarsense/modules/authentication/views/resetpass_view.dart';
 import 'package:solarsense/modules/authentication/views/signup_view.dart';
+import 'package:solarsense/modules/authentication/views/verify_email_view.dart';
 import 'package:solarsense/modules/dashboard/views/calculate_spot_view.dart';
 import 'package:solarsense/modules/dashboard/views/dashboard_view.dart';
+import 'package:solarsense/modules/map/bindings/map_bindings.dart';
 import 'package:solarsense/modules/map/views/map_view.dart';
 import 'package:solarsense/routes/app_routes.dart';
 
@@ -40,9 +42,18 @@ abstract class AppPages {
       page: () => const ResetPassView(),
       binding: ResetPassBindings(),
     ),
+    GetPage(
+      name: Routes.EDITPROFILE_VIEW,
+      page: () => const EditProfileView(),
+      binding: EditProfileBindings(),
+    ),
+    GetPage(
+      name: Routes.VERIFY_EMAIL_VIEW,
+      page: () => const VerifyEmailView(),
+    ),
   ];
-  static final List<GetPage> routes = [
-    ...authRoutes,
+
+  static final List<GetPage> dashboardRoutes = [
     GetPage(
       name: Routes.DASHBOARD_VIEW,
       page: () => const DashboardView(),
@@ -51,18 +62,27 @@ abstract class AppPages {
       name: Routes.CALCULATE_SPOT_VIEW,
       page: () => const CalculateSpotView(),
     ),
-    GetPage(
-      name: Routes.EDITPROFILE_VIEW,
-      page: () => const EditProfileView(),
-      binding: EditProfileBindings(),
-    ),
+  ];
+
+  static final List<GetPage> adminRoutes = [
     GetPage(
       name: Routes.MANAGE_USERS_VIEW,
       page: () => const ManageUsersView(),
     ),
+  ];
+
+  static final List<GetPage> commonRoutes = [
     GetPage(
       name: Routes.MAP_VIEW,
       page: () => const MapView(),
+      binding: MapBindings(),
     ),
+  ];
+
+  static final List<GetPage> routes = [
+    ...authRoutes,
+    ...dashboardRoutes,
+    ...adminRoutes,
+    ...commonRoutes,
   ];
 }

@@ -40,7 +40,7 @@ class ResetPassView extends GetView<ResetPassController> {
         },
         child: const Text(
           'Reset',
-          style: TextStyle(letterSpacing: 1.5),
+          style: TextStyle(letterSpacing: 1.5, color: Colors.white),
         ));
   }
 

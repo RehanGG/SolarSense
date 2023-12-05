@@ -48,7 +48,7 @@ class LoginView extends GetView<LoginController> {
         },
         child: const Text(
           'LOGIN',
-          style: TextStyle(letterSpacing: 1.5),
+          style: TextStyle(letterSpacing: 1.5, color: Colors.white),
         ));
   }
 

@@ -8,10 +8,8 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return AppController.to.state.loadingWillPop;
-      },
+    return PopScope(
+      canPop: AppController.to.state.loadingWillPop,
       child: Scaffold(
         backgroundColor: Colors.grey.withOpacity(0.4),
         body: const Center(

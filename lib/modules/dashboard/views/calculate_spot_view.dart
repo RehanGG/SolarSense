@@ -146,7 +146,10 @@ class _CalculateSpotViewState extends State<CalculateSpotView> {
           }
         },
         child: optimalData == null
-            ? const Icon(Icons.check)
+            ? const Icon(
+                Icons.check,
+                color: Colors.white,
+              )
             : Text(
                 'X',
                 style: TextStyle(fontSize: 25.sp),

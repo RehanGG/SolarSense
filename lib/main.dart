@@ -22,6 +22,15 @@ class SolarSense extends StatelessWidget {
         initialBinding: InitialBindings(),
         debugShowCheckedModeBanner: false,
         title: 'SolarSense',
+        themeMode: ThemeMode.light,
+        theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+              iconTheme: IconThemeData(color: Colors.white),
+              titleTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15)),
+        ),
         initialRoute: Routes.LOADING_VIEW,
         getPages: AppPages.routes,
       ),

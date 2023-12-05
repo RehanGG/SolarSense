@@ -61,7 +61,7 @@ class SignupView extends GetView<SignupController> {
         },
         child: const Text(
           'SIGNUP',
-          style: TextStyle(letterSpacing: 1.5),
+          style: TextStyle(letterSpacing: 1.5, color: Colors.white),
         ));
   }
 

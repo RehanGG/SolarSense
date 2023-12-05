@@ -48,7 +48,7 @@ class EditProfileView extends GetView<EditProfileController> {
         },
         child: const Text(
           'Save',
-          style: TextStyle(letterSpacing: 1.5),
+          style: TextStyle(letterSpacing: 1.5, color: Colors.white),
         ));
   }
 
