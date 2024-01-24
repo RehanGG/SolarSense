@@ -1,12 +1,18 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'package:solarsense/shared/constants/utilities.dart';
+import 'package:solarsense/modules/dashboard/views/pvgis_view.dart';
+import 'package:solarsense/shared/services/app_controller.dart';
+import '../../../routes/app_routes.dart';
 import '../../../shared/constants/constants.dart';
 import '../../../shared/widgets/app_drawer.dart';
+import 'package:get/get.dart';
+
+enum CalculationState {
+  Select,
+  Selected,
+  Calculate,
+}
 
 class CalculateSpotView extends StatefulWidget {
   const CalculateSpotView({Key? key}) : super(key: key);
@@ -16,69 +22,112 @@ class CalculateSpotView extends StatefulWidget {
 }
 
 class _CalculateSpotViewState extends State<CalculateSpotView> {
-  GoogleMapController? mapController;
-  LatLng? markerPosition;
-  Map<String, dynamic>? optimalData;
+  Map<String, dynamic> currentState = {
+    'state': CalculationState.Select,
+  };
 
   AppBar appBar() {
     return AppBar(
       backgroundColor: ColorConstants.primaryColor,
       title: const Text('Calculate Spot'),
+      actions: [
+        if (currentState['state'] == CalculationState.Calculate)
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  currentState['state'] = CalculationState.Select;
+                  currentState.remove('selectedLocation');
+                });
+              },
+              icon: Icon(
+                Icons.cancel_outlined,
+                color: Colors.red,
+                size: 30.w,
+              ))
+      ],
       centerTitle: true,
     );
   }
 
-  Widget dataColumn() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Inputs:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
-          ),
-          Text(
-              'Input Latitude: ${optimalData!['inputs']['location']['latitude']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Input Latitude: ${optimalData!['inputs']['location']['longitude']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text('Elevation: ${optimalData!['inputs']['location']['elevation']}',
-              style: TextStyle(fontSize: 13.sp)),
-          SizedBox(
-            height: 30.h,
-          ),
-          Text(
-            'Outputs:',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
-          ),
-          Text(
-              'Global horizontal solar radiation: ${optimalData!['outputs']['hourly'][0]['Gb(i)']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Direct horizontal solar radiation ${optimalData!['outputs']['hourly'][0]['Gd(i)']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Diffuse horizontal solar radiation ${optimalData!['outputs']['hourly'][0]['Gr(i)']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Solar height / Elevation angle : ${optimalData!['outputs']['hourly'][0]['H_sun']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Temperature at 2 meters above the ground: ${optimalData!['outputs']['hourly'][0]['T2m']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Wind speed at 10 meters above the ground: ${optimalData!['outputs']['hourly'][0]['WS10m']}',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Optical Orientation: ${optimalData!['inputs']['mounting_system']['fixed']['azimuth']['value']} degrees',
-              style: TextStyle(fontSize: 13.sp)),
-          Text(
-              'Optical Inclination: ${optimalData!['inputs']['mounting_system']['fixed']['slope']['value']} degrees',
-              style: TextStyle(fontSize: 13.sp)),
-        ],
-      ),
+  Widget _selectLoc() {
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorConstants.primaryColor,
+          fixedSize: Size.fromWidth(200.w),
+        ),
+        onPressed: () async {
+          late final LatLng selectLoc;
+          if (currentState.containsKey('selectedLocation')) {
+            selectLoc = currentState['selectedLocation'];
+          } else {
+            selectLoc = LatLng(
+                AppController.to.state.appUser.value!.location.coordinates.lat,
+                AppController
+                    .to.state.appUser.value!.location.coordinates.long);
+          }
+
+          final result =
+              await Get.toNamed(Routes.MAP_VIEW, arguments: selectLoc);
+          if (result != null) {
+            currentState['selectedLocation'] =
+                LatLng(result['lat'], result['lng']);
+            currentState['state'] = CalculationState.Selected;
+            setState(() {});
+          }
+        },
+        child: const Text(
+          'Select Location',
+          style: TextStyle(letterSpacing: 1.5, color: Colors.white),
+        ));
+  }
+
+  Widget _calculateLoc() {
+    return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorConstants.primaryColor,
+          fixedSize: Size.fromWidth(200.w),
+        ),
+        onPressed: () async {
+          setState(() {
+            currentState['state'] = CalculationState.Calculate;
+          });
+        },
+        child: const Text(
+          'Calculate',
+          style: TextStyle(letterSpacing: 1.5, color: Colors.white),
+        ));
+  }
+
+  Widget content() {
+    if (currentState['state'] == CalculationState.Select ||
+        currentState['state'] == CalculationState.Selected) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(10.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Select the location to continue...',
+              style: TextStyle(fontSize: 14.sp),
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            _selectLoc(),
+            if (currentState['state'] == CalculationState.Selected)
+              _calculateLoc(),
+          ],
+        ),
+      );
+    }
+    return PVGChartPage(
+      lat: (currentState['selectedLocation'] as LatLng).latitude,
+      lng: (currentState['selectedLocation'] as LatLng).longitude,
     );
   }
 
@@ -89,72 +138,7 @@ class _CalculateSpotViewState extends State<CalculateSpotView> {
         index: 3,
       ),
       appBar: appBar(),
-      body: optimalData == null
-          ? GoogleMap(
-              markers: (markerPosition == null)
-                  ? {}
-                  : {
-                      Marker(
-                        markerId: const MarkerId("selectedLocation"),
-                        position: markerPosition!,
-                      ),
-                    },
-              onCameraMove: (CameraPosition position) {
-                // Update marker position as the camera moves
-                setState(() {
-                  markerPosition = position.target;
-                });
-              },
-              onMapCreated: (GoogleMapController controller) {
-                mapController = controller;
-              },
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(37.7749, -122.4194), // Initial map center
-                zoom: 12.0, // Initial zoom level
-              ),
-            )
-          : dataColumn(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor:
-            optimalData == null ? ColorConstants.primaryColor : Colors.red,
-        onPressed: () async {
-          if (optimalData != null) {
-            setState(() {
-              optimalData = null;
-            });
-            return;
-          }
-          //TODO: CHANGE LATER
-          showLoadingScreen();
-          try {
-            final String apiUrl =
-                'https://re.jrc.ec.europa.eu/api/seriescalc?lat=${markerPosition?.latitude}&lon=${markerPosition?.longitude}&startyear=2010&endyear=2015&peakpower=1&loss=10&pvcalculation=1&components=1&tracking=0&optimalangles=1&angle=0&aspect=180&outputformat=json';
-
-            final response = await http.get(Uri.parse(apiUrl));
-
-            if (response.statusCode == 200) {
-              setState(() {
-                optimalData = json.decode(response.body);
-              });
-            } else {
-              throw Exception('Failed to load solar information');
-            }
-          } catch (_) {
-          } finally {
-            hideLoadingScreen();
-          }
-        },
-        child: optimalData == null
-            ? const Icon(
-                Icons.check,
-                color: Colors.white,
-              )
-            : Text(
-                'X',
-                style: TextStyle(fontSize: 25.sp),
-              ),
-      ),
+      body: content(),
     );
   }
 }
