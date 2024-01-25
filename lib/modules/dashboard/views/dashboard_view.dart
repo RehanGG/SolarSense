@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:solarsense/shared/constants/constants.dart';
 import 'package:solarsense/shared/widgets/app_drawer.dart';
 
 class DashboardView extends StatelessWidget {
@@ -8,7 +7,6 @@ class DashboardView extends StatelessWidget {
 
   AppBar appBar() {
     return AppBar(
-      backgroundColor: ColorConstants.primaryColor,
       title: const Text('Dashboard'),
       centerTitle: true,
     );

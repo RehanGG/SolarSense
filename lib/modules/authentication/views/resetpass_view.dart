@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:solarsense/modules/authentication/controllers/resetpass_controller.dart';
 import 'package:solarsense/shared/constants/constants.dart';
 
+import '../../../shared/services/app_controller.dart';
 import '../../../shared/widgets/text_form_field.dart';
 
 class ResetPassView extends GetView<ResetPassController> {
@@ -31,7 +32,10 @@ class ResetPassView extends GetView<ResetPassController> {
   Widget _resetButton() {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorConstants.primaryColor,
+          backgroundColor:
+              AppController.to.state.currentTheme.value == ThemeMode.dark
+                  ? ColorConstants.primaryDarkColor
+                  : ColorConstants.primaryColor,
           fixedSize: Size.fromWidth(120.w),
         ),
         onPressed: () {
@@ -48,7 +52,6 @@ class ResetPassView extends GetView<ResetPassController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ColorConstants.primaryColor,
         title: const Text('Reset Password'),
         centerTitle: true,
       ),

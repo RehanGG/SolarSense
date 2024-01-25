@@ -4,6 +4,7 @@ import 'package:solarsense/app.dart';
 import 'package:solarsense/routes/app_pages.dart';
 import 'package:solarsense/routes/app_routes.dart';
 import 'package:get/get.dart';
+import 'package:solarsense/shared/constants/theme.dart';
 import 'package:solarsense/shared/services/initial_bindings.dart';
 
 void main() async {
@@ -22,15 +23,9 @@ class SolarSense extends StatelessWidget {
         initialBinding: InitialBindings(),
         debugShowCheckedModeBanner: false,
         title: 'SolarSense',
-        themeMode: ThemeMode.light,
-        theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-              iconTheme: IconThemeData(color: Colors.white),
-              titleTextStyle: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15)),
-        ),
+        themeMode: ThemeMode.system,
+        theme: lightTheme,
+        darkTheme: darkTheme,
         initialRoute: Routes.LOADING_VIEW,
         getPages: AppPages.routes,
       ),

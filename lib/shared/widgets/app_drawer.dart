@@ -14,7 +14,9 @@ class AppDrawer extends StatelessWidget {
       return Container(
         padding: EdgeInsets.all(15.w),
         width: double.infinity,
-        color: ColorConstants.primaryColor,
+        color: AppController.to.state.currentTheme.value == ThemeMode.dark
+            ? ColorConstants.primaryDarkColor
+            : ColorConstants.primaryColor,
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +57,9 @@ class AppDrawer extends StatelessWidget {
   Widget tile(Function function, String text, int index, IconData icon) {
     return Material(
       color: this.index == index
-          ? ColorConstants.secondaryColor.withOpacity(0.1)
+          ? AppController.to.state.currentTheme.value == ThemeMode.dark
+              ? ColorConstants.primaryDarkColor.withOpacity(0.1)
+              : ColorConstants.secondaryColor.withOpacity(0.1)
           : Colors.transparent,
       child: ListTile(
         title: Text(
@@ -71,8 +75,11 @@ class AppDrawer extends StatelessWidget {
         },
         leading: Icon(
           icon,
-          color:
-              this.index == index ? ColorConstants.secondaryColor : Colors.grey,
+          color: this.index == index
+              ? AppController.to.state.currentTheme.value == ThemeMode.dark
+                  ? ColorConstants.primaryDarkColor
+                  : ColorConstants.secondaryColor
+              : Colors.grey,
         ),
       ),
     );
@@ -91,6 +98,10 @@ class AppDrawer extends StatelessWidget {
           tile(() {
             Get.offAllNamed(Routes.CALCULATE_SPOT_VIEW);
           }, 'Calculate Spot', 3, Icons.sunny),
+          tile(() {
+            AppController.to.switchTheme();
+            Get.changeThemeMode(AppController.to.state.currentTheme.value);
+          }, 'Switch Theme', 4, Icons.published_with_changes),
           if (AppController.to.state.appUser.value!.admin)
             tile(() {
               Get.toNamed(Routes.MANAGE_USERS_VIEW);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/constants.dart';
+import '../services/app_controller.dart';
 
 class AuthAppBar extends StatelessWidget {
   final String text;
@@ -12,7 +13,9 @@ class AuthAppBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
       width: double.infinity,
-      color: ColorConstants.primaryColor,
+      color: AppController.to.state.currentTheme.value == ThemeMode.dark
+          ? ColorConstants.primaryDarkColor
+          : ColorConstants.primaryColor,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

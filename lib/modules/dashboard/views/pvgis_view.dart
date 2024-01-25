@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:solarsense/shared/constants/constants.dart';
 import 'package:solarsense/shared/widgets/loading_indicator.dart';
 
+import '../../../shared/services/app_controller.dart';
 import '../../../shared/services/pvgisapi.dart';
 
 class PVGChartPage extends StatefulWidget {
@@ -56,7 +57,9 @@ class _PVGChartPageState extends State<PVGChartPage> {
     return Container(
       padding: EdgeInsets.all(10.w),
       margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.h),
-      color: ColorConstants.primaryColor,
+      color: AppController.to.state.currentTheme.value == ThemeMode.dark
+          ? ColorConstants.primaryDarkColor
+          : ColorConstants.primaryColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

@@ -7,6 +7,7 @@ import 'package:solarsense/shared/widgets/auth_appbar.dart';
 
 import '../../../routes/app_routes.dart';
 import '../../../shared/constants/constants.dart';
+import '../../../shared/services/app_controller.dart';
 import '../../../shared/widgets/password_form_field.dart';
 import '../../../shared/widgets/text_form_field.dart';
 import '../widgets/select_location.dart';
@@ -52,7 +53,10 @@ class SignupView extends GetView<SignupController> {
   Widget _signupButton() {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorConstants.primaryColor,
+          backgroundColor:
+              AppController.to.state.currentTheme.value == ThemeMode.dark
+                  ? ColorConstants.primaryDarkColor
+                  : ColorConstants.primaryColor,
           fixedSize: Size.fromWidth(120.w),
         ),
         onPressed: () {

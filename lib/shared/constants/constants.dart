@@ -8,6 +8,9 @@ abstract class ColorConstants {
   static const Color thirdColor = Color.fromRGBO(40, 168, 228, 1);
   static const Color accentColor = Color.fromRGBO(251, 175, 63, 1);
   static const Color errorContainerColor = Color.fromRGBO(229, 9, 20, 1);
+
+  //Dark
+  static const Color primaryDarkColor = Color.fromRGBO(57, 54, 70, 1);
 }
 
 abstract class FirestoreConstants {

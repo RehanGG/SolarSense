@@ -9,6 +9,8 @@ import 'package:solarsense/shared/widgets/auth_appbar.dart';
 import 'package:solarsense/shared/widgets/password_form_field.dart';
 import 'package:solarsense/shared/widgets/text_form_field.dart';
 
+import '../../../shared/services/app_controller.dart';
+
 class LoginView extends GetView<LoginController> {
   const LoginView({Key? key}) : super(key: key);
 
@@ -39,7 +41,10 @@ class LoginView extends GetView<LoginController> {
   Widget _loginButton() {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorConstants.primaryColor,
+          backgroundColor:
+              AppController.to.state.currentTheme.value == ThemeMode.dark
+                  ? ColorConstants.primaryDarkColor
+                  : ColorConstants.primaryColor,
           fixedSize: Size.fromWidth(120.w),
         ),
         onPressed: () {

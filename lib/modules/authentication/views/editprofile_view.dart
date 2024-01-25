@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:solarsense/modules/authentication/controllers/editprofile_controller.dart';
 
 import '../../../shared/constants/constants.dart';
+import '../../../shared/services/app_controller.dart';
 import '../../../shared/widgets/text_form_field.dart';
 import '../widgets/select_location.dart';
 
@@ -39,7 +40,10 @@ class EditProfileView extends GetView<EditProfileController> {
   Widget _updateButton() {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorConstants.primaryColor,
+          backgroundColor:
+              AppController.to.state.currentTheme.value == ThemeMode.dark
+                  ? ColorConstants.primaryDarkColor
+                  : ColorConstants.primaryColor,
           fixedSize: Size.fromWidth(120.w),
         ),
         onPressed: () {
@@ -56,7 +60,6 @@ class EditProfileView extends GetView<EditProfileController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ColorConstants.primaryColor,
         title: const Text('Edit Profile'),
         centerTitle: true,
       ),

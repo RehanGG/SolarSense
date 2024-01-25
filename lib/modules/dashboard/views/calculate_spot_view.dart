@@ -28,7 +28,6 @@ class _CalculateSpotViewState extends State<CalculateSpotView> {
 
   AppBar appBar() {
     return AppBar(
-      backgroundColor: ColorConstants.primaryColor,
       title: const Text('Calculate Spot'),
       actions: [
         if (currentState['state'] == CalculationState.Calculate)
@@ -52,7 +51,10 @@ class _CalculateSpotViewState extends State<CalculateSpotView> {
   Widget _selectLoc() {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorConstants.primaryColor,
+          backgroundColor:
+              AppController.to.state.currentTheme.value == ThemeMode.dark
+                  ? ColorConstants.primaryDarkColor
+                  : ColorConstants.primaryColor,
           fixedSize: Size.fromWidth(200.w),
         ),
         onPressed: () async {
@@ -84,7 +86,10 @@ class _CalculateSpotViewState extends State<CalculateSpotView> {
   Widget _calculateLoc() {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: ColorConstants.primaryColor,
+          backgroundColor:
+              AppController.to.state.currentTheme.value == ThemeMode.dark
+                  ? ColorConstants.primaryDarkColor
+                  : ColorConstants.primaryColor,
           fixedSize: Size.fromWidth(200.w),
         ),
         onPressed: () async {
