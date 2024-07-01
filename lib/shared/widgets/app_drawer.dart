@@ -99,6 +99,9 @@ class AppDrawer extends StatelessWidget {
             Get.offAllNamed(Routes.CALCULATE_SPOT_VIEW);
           }, 'Calculate Spot', 3, Icons.sunny),
           tile(() {
+            Get.offAllNamed(Routes.FEASIBILITY_REPORT_VIEW);
+          }, 'Feasibility Report', 5, Icons.edit_document),
+          tile(() {
             AppController.to.switchTheme();
             Get.changeThemeMode(AppController.to.state.currentTheme.value);
           }, 'Switch Theme', 4, Icons.published_with_changes),

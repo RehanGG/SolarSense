@@ -12,11 +12,13 @@ import 'package:solarsense/modules/authentication/views/signup_view.dart';
 import 'package:solarsense/modules/authentication/views/verify_email_view.dart';
 import 'package:solarsense/modules/dashboard/views/calculate_spot_view.dart';
 import 'package:solarsense/modules/dashboard/views/dashboard_view.dart';
+import 'package:solarsense/modules/feasibility_report/bindings/report_bindings.dart';
 import 'package:solarsense/modules/map/bindings/map_bindings.dart';
 import 'package:solarsense/modules/map/views/map_view.dart';
 import 'package:solarsense/routes/app_routes.dart';
 
 import '../modules/authentication/bindings/resetpass_bindings.dart';
+import '../modules/feasibility_report/views/report_view.dart';
 
 abstract class AppPages {
   AppPages._();
@@ -61,6 +63,11 @@ abstract class AppPages {
     GetPage(
       name: Routes.CALCULATE_SPOT_VIEW,
       page: () => const CalculateSpotView(),
+    ),
+    GetPage(
+      name: Routes.FEASIBILITY_REPORT_VIEW,
+      page: () => const ReportView(),
+      binding: ReportBindings(),
     ),
   ];
 

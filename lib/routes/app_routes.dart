@@ -18,4 +18,7 @@ abstract class Routes {
 
   //Admin
   static const String MANAGE_USERS_VIEW = '/manage-users-view';
+
+  //Report
+  static const String FEASIBILITY_REPORT_VIEW = '/feasibility-report-view';
 }

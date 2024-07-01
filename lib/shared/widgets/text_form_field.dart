@@ -5,9 +5,11 @@ import 'package:solarsense/shared/constants/constants.dart';
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
+  final TextInputType? inputText;
 
   const CustomTextField({
     Key? key,
+    this.inputText,
     required this.controller,
     required this.hintText,
   }) : super(key: key);
@@ -23,6 +25,7 @@ class CustomTextField extends StatelessWidget {
       child: TextFormField(
         textAlign: TextAlign.center,
         controller: controller,
+        keyboardType: inputText,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Colors.black),
