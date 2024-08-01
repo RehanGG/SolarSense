@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:printing/printing.dart';
 import 'package:solarsense/models/field_exception.dart';
 import 'package:solarsense/modules/feasibility_report/state/report_state.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +17,24 @@ import 'package:solarsense/shared/services/app_controller.dart';
 import 'dart:io';
 
 import '../../../shared/constants/utilities.dart';
+
+extension MonthNameExtension on int {
+  String get getMonth {
+    if (this == 1) return 'January';
+    if (this == 2) return 'February';
+    if (this == 3) return 'March';
+    if (this == 4) return 'April';
+    if (this == 5) return 'May';
+    if (this == 6) return 'June';
+    if (this == 7) return 'July';
+    if (this == 8) return 'August';
+    if (this == 9) return 'September';
+    if (this == 10) return 'October';
+    if (this == 11) return 'November';
+    if (this == 12) return 'December';
+    return 'Invalid';
+  }
+}
 
 class ReportController extends GetxController {
   final ReportState state = ReportState();
@@ -98,32 +118,94 @@ class ReportController extends GetxController {
   List<List<String>> filterData(List weatherData, List energyProduced) {
     List<List<String>> filteredData = [];
 
-    for (int i = 0; i < 5; i++) {
-      filteredData.add([
-        weatherData[i]['datetime'],
-        energyProduced[i].toStringAsFixed(2),
-      ]);
+    Map<int, Map<String, dynamic>> monthlySums = {};
+
+    for (int i = 0; i < weatherData.length; i++) {
+      String datetime = weatherData[i]['datetime'];
+      double prediction = energyProduced[i];
+      int month = DateFormat('yyyy-MM-dd').parse(datetime).month;
+      int year = DateFormat('yyyy-MM-dd').parse(datetime).year;
+
+      if (monthlySums.containsKey(month)) {
+        monthlySums[month]!['data'] = monthlySums[month]!['data'] + prediction;
+      } else {
+        monthlySums[month] = {'year': year, 'data': prediction};
+      }
     }
 
-    for (int i = weatherData.length - 3; i < weatherData.length; i++) {
+    for (int month in monthlySums.keys) {
       filteredData.add([
-        weatherData[i]['datetime'],
-        energyProduced[i].toStringAsFixed(2),
+        monthlySums[month]!['year'].toString(),
+        month.getMonth,
+        '${monthlySums[month]!['data'].toStringAsFixed(2)} kWh'
       ]);
     }
 
     return filteredData;
   }
 
+  pw.Column createTable(List header, List<List> data, String heading) {
+    final pw.Container headingContainer = pw.Container(
+        width: double.infinity,
+        padding: const pw.EdgeInsets.all(8.0),
+        color: PdfColors.amber,
+        child: pw.Text(heading,
+            textAlign: pw.TextAlign.center,
+            style: const pw.TextStyle(
+              fontSize: 14,
+              color: PdfColors.black,
+            )));
+
+    final table = pw.TableHelper.fromTextArray(
+      cellHeight: 30,
+      headerHeight: 40,
+      headerAlignment: pw.Alignment.centerLeft,
+      cellAlignment: pw.Alignment.centerLeft,
+      headerDecoration: const pw.BoxDecoration(
+        borderRadius: pw.BorderRadius.all(pw.Radius.circular(2)),
+        color: PdfColors.grey100,
+      ),
+      border: null,
+      headers: header,
+      data: data,
+      headerStyle: pw.TextStyle(
+        fontSize: 10,
+        fontWeight: pw.FontWeight.bold,
+      ),
+      cellStyle: const pw.TextStyle(
+        fontSize: 10,
+      ),
+      rowDecoration: const pw.BoxDecoration(
+        border: pw.Border(
+          bottom: pw.BorderSide(
+            color: PdfColors.grey,
+            width: .5,
+          ),
+        ),
+      ),
+    );
+    return pw.Column(children: [
+      headingContainer,
+      pw.SizedBox(height: 30.0),
+      table,
+    ]);
+  }
+
   void generatePdf() async {
     final pdf = pw.Document();
 
-    final font = await rootBundle.load("assets/Roboto-Regular.ttf");
-    final ttf = pw.Font.ttf(font);
+    final theme = pw.ThemeData.withFont(
+      base: await PdfGoogleFonts.openSansRegular(),
+      bold: await PdfGoogleFonts.openSansBold(),
+      italic: await PdfGoogleFonts.openSansItalic(),
+    );
+
+    final ByteData bytes = await rootBundle.load('assets/icon.png');
+    final Uint8List imageData = bytes.buffer.asUint8List();
+    final image = pw.MemoryImage(imageData);
 
     final List weatherData = state.weatherData['days'];
     final List predictionData = state.modelData['predictions'];
-
     final filteredWeatherData = filterData(weatherData, predictionData);
 
     final double annualSavings = predictionData.reduce((a, b) => a + b) *
@@ -133,176 +215,108 @@ class ReportController extends GetxController {
     final double paybackPeriod =
         double.parse(state.installationPrice.text) / annualSavings;
 
-    pdf.addPage(pw.Page(
-        pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.center,
-              children: [
-                pw.Text('Solar Panel\nFeasibility Report',
-                    style: pw.TextStyle(
-                        font: ttf,
-                        fontSize: 26,
-                        fontWeight: pw.FontWeight.bold),
-                    textAlign: pw.TextAlign.center),
-                pw.SizedBox(height: 80),
-                pw.Padding(
-                  padding: const pw.EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 0.0),
-                  child: pw.Text(
-                    'User Information',
-                    style: pw.TextStyle(
-                        font: ttf,
-                        fontSize: 20,
-                        fontWeight: pw.FontWeight.bold),
-                  ),
-                ),
-                pw.Table.fromTextArray(
-                  context: context,
-                  headers: ['Type', 'Data'],
-                  data: [
-                    [
-                      'User Name',
-                      AppController.to.state.appUser.value!.fullName
-                    ],
-                    ['User Email', AppController.to.state.appUser.value!.email],
-                    ['User Location', state.locationName.value!],
-                  ],
-                  border: pw.TableBorder.all(width: 1.0),
-                  headerAlignment: pw.Alignment.centerLeft,
-                  cellAlignment: pw.Alignment.centerLeft,
-                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  cellStyle: const pw.TextStyle(),
-                  headerDecoration:
-                      const pw.BoxDecoration(color: PdfColors.grey200),
-                  cellPadding: const pw.EdgeInsets.all(5),
-                ),
-                pw.SizedBox(height: 50),
-                //Next table
-                pw.Padding(
-                  padding: const pw.EdgeInsets.symmetric(
-                      vertical: 20.0, horizontal: 0.0),
-                  child: pw.Text(
-                    'Solar Information',
-                    style: pw.TextStyle(
-                        font: ttf,
-                        fontSize: 20,
-                        fontWeight: pw.FontWeight.bold),
-                  ),
-                ),
-                pw.Table.fromTextArray(
-                  context: context,
-                  headers: ['Type', 'Data'],
-                  data: [
-                    [
-                      'Installation Cost',
-                      "Rs ${state.installationPrice.value.text}"
-                    ],
-                    [
-                      'Installation Date',
-                      "${state.installationDate.value!.year}-${state.installationDate.value!.month}-${state.installationDate.value!.day}"
-                    ],
-                    [
-                      'Electricity Price (kWh)',
-                      "Rs ${state.electricityCost.value.text} kWh"
-                    ],
-                    ['Panel Capacity', "${state.panelCapacity.value.text} kWh"],
-                  ],
-                  border: pw.TableBorder.all(width: 1.0),
-                  headerAlignment: pw.Alignment.centerLeft,
-                  cellAlignment: pw.Alignment.centerLeft,
-                  headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                  cellStyle: const pw.TextStyle(),
-                  headerDecoration:
-                      const pw.BoxDecoration(color: PdfColors.grey200),
-                  cellPadding: const pw.EdgeInsets.all(5),
-                ),
-              ]); // Center
-        }));
+    final pw.Container header = pw.Container(
+        width: double.infinity,
+        padding: const pw.EdgeInsets.all(10.0),
+        color: PdfColor.fromHex('0b004d'),
+        child: pw.Text('Feasibility Report',
+            textAlign: pw.TextAlign.center,
+            style: const pw.TextStyle(
+              fontSize: 20,
+              color: PdfColors.white,
+            )));
 
-    pdf.addPage(pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        build: (pw.Context context) {
-          return [
-            pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.center,
-                children: [
-                  pw.SizedBox(height: 50),
-                  //Next table
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.symmetric(
-                        vertical: 20.0, horizontal: 0.0),
-                    child: pw.Text(
-                      'Energy Production (Prediction)',
-                      style: pw.TextStyle(
-                          font: ttf,
-                          fontSize: 20,
-                          fontWeight: pw.FontWeight.bold),
-                    ),
-                  ),
-                  pw.Table.fromTextArray(
-                    context: context,
-                    headers: ['Date', 'Energy Produced'],
-                    data: filteredWeatherData,
-                    border: pw.TableBorder.all(width: 1.0),
-                    headerAlignment: pw.Alignment.centerLeft,
-                    cellAlignment: pw.Alignment.centerLeft,
-                    headerStyle:
-                        pw.TextStyle(fontWeight: pw.FontWeight.bold, font: ttf),
-                    cellStyle: pw.TextStyle(font: ttf),
-                    headerDecoration:
-                        const pw.BoxDecoration(color: PdfColors.grey200),
-                    cellPadding: const pw.EdgeInsets.all(5),
-                  ),
-                  pw.SizedBox(height: 50),
-                  //Next table
-                  pw.Padding(
-                    padding: const pw.EdgeInsets.symmetric(
-                        vertical: 20.0, horizontal: 0.0),
-                    child: pw.Text(
-                      'Analysis',
-                      style: pw.TextStyle(
-                          font: ttf,
-                          fontSize: 20,
-                          fontWeight: pw.FontWeight.bold),
-                    ),
-                  ),
-                  pw.Table.fromTextArray(
-                    context: context,
-                    headers: ['Type', 'Data'],
-                    data: [
-                      [
-                        'Annual Savings',
-                        "${annualSavings.toStringAsFixed(2)} kWh"
-                      ],
-                      ['ROI', roi.toStringAsFixed(2)],
-                      [
-                        'Payback Period',
-                        "${paybackPeriod.toStringAsFixed(2)} years"
-                      ]
-                    ],
-                    border: pw.TableBorder.all(width: 1.0),
-                    headerAlignment: pw.Alignment.centerLeft,
-                    cellAlignment: pw.Alignment.centerLeft,
-                    headerStyle:
-                        pw.TextStyle(fontWeight: pw.FontWeight.bold, font: ttf),
-                    cellStyle: const pw.TextStyle(),
-                    headerDecoration:
-                        const pw.BoxDecoration(color: PdfColors.grey200),
-                    cellPadding: const pw.EdgeInsets.all(5),
-                  ),
-                ])
-          ];
-        })); // Page
-
+    final DateTime nowDate = DateTime.now().toLocal();
     DateTime currentDate = state.installationDate.value!;
     DateTime newDate =
         state.installationDate.value!.add(Duration(days: daysToAdd));
 
+    final pw.Column userInfo =
+        pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
+      pw.Text('Report Generated by',
+          style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+      pw.SizedBox(height: 10),
+      pw.Text(AppController.to.state.appUser.value!.fullName,
+          style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.normal)),
+      pw.Text(AppController.to.state.appUser.value!.email,
+          style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.normal)),
+      pw.Text(state.locationName.value!,
+          style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.normal)),
+      pw.SizedBox(height: 7),
+      pw.Text('Date: ${nowDate.year}-${nowDate.month}-${nowDate.day}',
+          style: pw.TextStyle(
+              fontSize: 9,
+              fontWeight: pw.FontWeight.normal,
+              fontStyle: pw.FontStyle.italic)),
+      pw.Text(
+          'Timeframe: ${currentDate.year}-${currentDate.month} to ${newDate.year}-${newDate.month}',
+          style: pw.TextStyle(
+              fontSize: 9,
+              fontWeight: pw.FontWeight.normal,
+              fontStyle: pw.FontStyle.italic)),
+    ]);
+
+    final pw.Row userInfoRow =
+        pw.Row(mainAxisAlignment: pw.MainAxisAlignment.spaceBetween, children: [
+      userInfo,
+      pw.Image(image, width: 85, height: 85),
+    ]);
+
+    final pw.Column solarInfoTable = createTable([
+      'Description',
+      'Info'
+    ], [
+      ['Installation Cost', "Rs ${state.installationPrice.value.text}"],
+      [
+        'Installation Date',
+        "${state.installationDate.value!.year}-${state.installationDate.value!.month}-${state.installationDate.value!.day}"
+      ],
+      ['Electricity Price (kWh)', "Rs ${state.electricityCost.value.text} kWh"],
+      ['Panel Capacity', "${state.panelCapacity.value.text} kWh"]
+    ], 'Solar Panel Information');
+
+    final pw.Column energyTable = createTable(
+        ['Year', 'Month', 'Energy Produced'],
+        filteredWeatherData,
+        'Energy Production (Prediction)');
+
+    final pw.Column analysisTable = createTable([
+      'Description',
+      'Info'
+    ], [
+      ['Annual Savings', "${annualSavings.toStringAsFixed(2)} kWh"],
+      ['ROI', roi.toStringAsFixed(2)],
+      ['Payback Period', "${paybackPeriod.toStringAsFixed(2)} years"]
+    ], 'Analysis');
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        theme: theme,
+        build: (context) => [
+          header,
+          pw.SizedBox(height: 50),
+          userInfoRow,
+          pw.SizedBox(height: 80),
+          solarInfoTable,
+          pw.SizedBox(height: 60),
+        ],
+      ),
+    );
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        theme: theme,
+        build: (context) =>
+            [energyTable, pw.SizedBox(height: 60), analysisTable],
+      ),
+    );
+
     final directory = await getTemporaryDirectory();
 
     final file = File(
-        "${directory.path}/${currentDate.year}-${newDate.year}-FeasibilityReport.pdf");
+        "${directory.path}/${currentDate.year}${currentDate.month}-${newDate.year}${newDate.month}-FeasibilityReport.pdf");
     await file.writeAsBytes(await pdf.save());
     OpenFile.open(file.path);
     state.generatePdf.value = false;

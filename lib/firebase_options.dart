@@ -63,6 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '300178088385',
     projectId: 'solarsense-6654b',
     storageBucket: 'solarsense-6654b.appspot.com',
+    iosClientId: '300178088385-n8j5meq8gdlan28evircctcom9nijqal.apps.googleusercontent.com',
     iosBundleId: 'com.fyp.szabist.solarsense',
   );
+
 }

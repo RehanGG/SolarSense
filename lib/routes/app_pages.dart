@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:solarsense/modules/admin/views/manage_users_view.dart';
+import 'package:solarsense/modules/authentication/bindings/create_new_account_bindings.dart';
 import 'package:solarsense/modules/authentication/bindings/editprofile_bindings.dart';
 import 'package:solarsense/modules/authentication/bindings/loading_bindings.dart';
 import 'package:solarsense/modules/authentication/bindings/login_bindings.dart';
 import 'package:solarsense/modules/authentication/bindings/signup_bindings.dart';
+import 'package:solarsense/modules/authentication/views/create_new_account_view.dart';
 import 'package:solarsense/modules/authentication/views/editprofile_view.dart';
 import 'package:solarsense/modules/authentication/views/loading_view.dart';
 import 'package:solarsense/modules/authentication/views/login_view.dart';
@@ -53,6 +55,10 @@ abstract class AppPages {
       name: Routes.VERIFY_EMAIL_VIEW,
       page: () => const VerifyEmailView(),
     ),
+    GetPage(
+        name: Routes.CREATE_NEW_ACCOUNT,
+        page: () => const CreateNewAccountView(),
+        binding: CreateNewAccountBindings()),
   ];
 
   static final List<GetPage> dashboardRoutes = [

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:solarsense/models/field_exception.dart';
 import 'package:solarsense/modules/authentication/state/login_state.dart';
 import 'package:solarsense/routes/app_routes.dart';
@@ -16,6 +17,28 @@ class LoginController extends GetxController {
     }
     if (state.password.text.isEmpty) {
       throw const FieldException('Enter the password', 'Password');
+    }
+  }
+
+  void loginGoogle() async {
+    showLoadingScreen();
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      hideLoadingScreen();
+      Get.offAllNamed(Routes.LOADING_VIEW);
+    } catch (_) {
+      hideLoadingScreen();
+      showGetSnackBar('Error', 'Google SignIn Failed');
     }
   }
 

@@ -8,6 +8,7 @@ abstract class Routes {
   static const String RESETPASS_VIEW = '/resetpass-view';
   static const String EDITPROFILE_VIEW = '/edit-profile-view';
   static const String VERIFY_EMAIL_VIEW = '/verify-email-view';
+  static const String CREATE_NEW_ACCOUNT = '/create-new-account';
 
   //LOCATION
   static const String MAP_VIEW = '/map-view';

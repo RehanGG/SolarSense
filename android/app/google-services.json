@@ -12,7 +12,12 @@
           "package_name": "com.fyp.szabist.solarsense"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "300178088385-7usihmfb8r8hhjhui5ueqnngp59s0bsl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBS4cQ_KSKuHRz3FxgZzehqFJVRCeJHcHc"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "300178088385-7usihmfb8r8hhjhui5ueqnngp59s0bsl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "300178088385-n8j5meq8gdlan28evircctcom9nijqal.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fyp.szabist.solarsense"
+              }
+            }
+          ]
         }
       }
     }

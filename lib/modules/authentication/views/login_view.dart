@@ -31,8 +31,38 @@ class LoginView extends GetView<LoginController> {
             height: 5.h,
           ),
           _loginButton(),
+          signInWithGoogle(),
           SizedBox(height: 80.h),
           relatedWidgets(),
+        ],
+      ),
+    );
+  }
+
+  Widget signInWithGoogle() {
+    return ElevatedButton(
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.deepPurple)),
+      onPressed: () {
+        controller.loginGoogle();
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            backgroundImage: const AssetImage(
+              'assets/google.png',
+            ),
+            radius: 10.h,
+          ),
+          SizedBox(
+            width: 10.w,
+          ),
+          const Text(
+            'Sign in with Google',
+            style: TextStyle(
+                fontSize: 15.0, letterSpacing: 1.0, color: Colors.white),
+          )
         ],
       ),
     );
@@ -45,7 +75,7 @@ class LoginView extends GetView<LoginController> {
               AppController.to.state.currentTheme.value == ThemeMode.dark
                   ? ColorConstants.primaryDarkColor
                   : ColorConstants.primaryColor,
-          fixedSize: Size.fromWidth(120.w),
+          fixedSize: const Size.fromWidth(double.maxFinite),
         ),
         onPressed: () {
           Get.focusScope?.unfocus();
