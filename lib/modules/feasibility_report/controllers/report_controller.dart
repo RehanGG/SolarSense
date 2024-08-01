@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:solarsense/shared/services/app_controller.dart';
 import 'dart:io';
 
+import '../../../shared/constants/constants.dart';
 import '../../../shared/constants/utilities.dart';
 
 extension MonthNameExtension on int {
@@ -39,7 +41,7 @@ extension MonthNameExtension on int {
 class ReportController extends GetxController {
   final ReportState state = ReportState();
 
-  final int daysToAdd = 365;
+  static const int daysToAdd = 365;
 
   void validateData() {
     if (state.installationPrice.text.isEmpty) {
@@ -94,28 +96,60 @@ class ReportController extends GetxController {
   String generateApiUrl() {
     DateTime currentDate = state.installationDate.value!;
     DateTime newDate =
-        state.installationDate.value!.add(Duration(days: daysToAdd));
+        state.installationDate.value!.add(const Duration(days: daysToAdd));
     return 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${state.selectedLocation.value!.latitude},${state.selectedLocation.value!.longitude}/${currentDate.year}-${currentDate.month}-${currentDate.day}/${newDate.year}-${newDate.month}-${newDate.day}?unitGroup=metric&include=days&key=VDCDUVC5DVUM7T9R5V6J846FT&contentType=json';
   }
 
   void getWeatherData() async {
     String apiUrl = generateApiUrl();
-    final res = await http.get(Uri.parse(apiUrl));
-    state.weatherData = jsonDecode(res.body);
+    if (state.isChanged) {
+      final res = await http.get(Uri.parse(apiUrl));
+      state.weatherData = jsonDecode(res.body);
+    }
     state.currentStep.value = 3;
     getPrediction();
   }
 
   void getPrediction() async {
-    final res = await http.post(Uri.parse("http://23.88.118.205:5000/predict"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({"data": state.weatherData['days']}));
-    state.modelData = jsonDecode(res.body);
+    if (state.isChanged) {
+      final res = await http.post(
+          Uri.parse("http://23.88.118.205:5000/predict"),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({"data": state.weatherData['days']}));
+      state.modelData = jsonDecode(res.body);
+    }
     state.currentStep.value = 4;
+    saveInFirebase();
     generatePdf();
   }
 
-  List<List<String>> filterData(List weatherData, List energyProduced) {
+  void saveInFirebase() {
+    if (state.isChanged) {
+      state.isChanged = false;
+
+      final DateTime nowDate = DateTime.now().toLocal();
+      DateTime currentDate = state.installationDate.value!;
+      DateTime newDate =
+          state.installationDate.value!.add(const Duration(days: daysToAdd));
+
+      FirebaseFirestore.instance.collection(FirestoreConstants.REPORT).add({
+        'weatherData': state.weatherData,
+        'predictions': state.modelData['predictions'],
+        'userId': AppController.to.state.appUser.value!.userId,
+        'installationCost': state.installationPrice.value.text,
+        'installationDate':
+            "${state.installationDate.value!.year}-${state.installationDate.value!.month}-${state.installationDate.value!.day}",
+        'electricityCost': state.electricityCost.value.text,
+        'panelCapacity': state.panelCapacity.value.text,
+        'date': '${nowDate.year}-${nowDate.month}-${nowDate.day}',
+        'timeframe':
+            '${currentDate.year}-${currentDate.month} to ${newDate.year}-${newDate.month}',
+        'locationName': state.locationName.value!,
+      });
+    }
+  }
+
+  static List<List<String>> filterData(List weatherData, List energyProduced) {
     List<List<String>> filteredData = [];
 
     Map<int, Map<String, dynamic>> monthlySums = {};
@@ -144,7 +178,7 @@ class ReportController extends GetxController {
     return filteredData;
   }
 
-  pw.Column createTable(List header, List<List> data, String heading) {
+  static pw.Column createTable(List header, List<List> data, String heading) {
     final pw.Container headingContainer = pw.Container(
         width: double.infinity,
         padding: const pw.EdgeInsets.all(8.0),
@@ -229,7 +263,7 @@ class ReportController extends GetxController {
     final DateTime nowDate = DateTime.now().toLocal();
     DateTime currentDate = state.installationDate.value!;
     DateTime newDate =
-        state.installationDate.value!.add(Duration(days: daysToAdd));
+        state.installationDate.value!.add(const Duration(days: daysToAdd));
 
     final pw.Column userInfo =
         pw.Column(crossAxisAlignment: pw.CrossAxisAlignment.start, children: [
@@ -284,7 +318,7 @@ class ReportController extends GetxController {
       'Description',
       'Info'
     ], [
-      ['Annual Savings', "${annualSavings.toStringAsFixed(2)} kWh"],
+      ['Annual Savings', "Rs ${annualSavings.toStringAsFixed(2)}"],
       ['ROI', roi.toStringAsFixed(2)],
       ['Payback Period', "${paybackPeriod.toStringAsFixed(2)} years"]
     ], 'Analysis');
@@ -367,5 +401,12 @@ class ReportController extends GetxController {
       state.locationName.value = null;
       showGetSnackBar('Invalid Location', 'Please select correct location');
     }
+  }
+
+  @override
+  void onInit() {
+    ever(state.installationDate, (value) => state.isChanged = true);
+    ever(state.selectedLocation, (value) => state.isChanged = true);
+    super.onInit();
   }
 }

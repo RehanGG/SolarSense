@@ -16,4 +16,5 @@ abstract class ColorConstants {
 abstract class FirestoreConstants {
   FirestoreConstants._();
   static const String USERS = 'users';
+  static const String REPORT = 'report';
 }

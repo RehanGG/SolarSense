@@ -23,4 +23,6 @@ class ReportState {
 
   Map<String, dynamic> weatherData = {};
   Map<String, dynamic> modelData = {};
+
+  bool isChanged = false;
 }

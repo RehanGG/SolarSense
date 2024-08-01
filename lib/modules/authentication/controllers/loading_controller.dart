@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:solarsense/models/field_exception.dart';
 import 'package:solarsense/models/user_profile_model.dart';
 import 'package:solarsense/routes/app_routes.dart';
 import 'package:solarsense/shared/constants/constants.dart';

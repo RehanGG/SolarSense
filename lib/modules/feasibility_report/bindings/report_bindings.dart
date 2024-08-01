@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:solarsense/modules/feasibility_report/controllers/report_controller.dart';
-import 'package:solarsense/modules/map/controllers/map_controller.dart';
 
 class ReportBindings implements Bindings {
   @override
